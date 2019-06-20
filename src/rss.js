@@ -19,16 +19,18 @@ module.exports = {
 
     }, function (error, response, xml) {
       if (!error && response.statusCode == 200) {
-        var parser = new xml2js.Parser({ trim: false, normalize: true, mergeAttrs: true });
-        parser.addListener("error", function (err) {
-          callback(err, null);
-        });
-        parser.parseString(xml, function (err, result) {
-
-          callback(null, $.parser(result));
-          //console.log(JSON.stringify(result.rss.channel));
-        });
-
+        try {
+          var parser = new xml2js.Parser({ trim: false, normalize: true, mergeAttrs: true });
+          parser.addListener("error", function (err) {
+            callback(err, null);
+          });
+          parser.parseString(xml, function (err, result) {
+            callback(null, $.parser(result));
+            //console.log(JSON.stringify(result.rss.channel));
+          });
+        } catch(e) {
+          callback(e, null);
+        }
       } else {
         this.emit('error', new Error('Bad status code'));
       }
